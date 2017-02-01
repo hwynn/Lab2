@@ -2,12 +2,12 @@
 #this generates voters with opinion values for x given candidates
 #http://stackoverflow.com/a/8064754 inspiration source
 import random
-def random100List(x):
+def randomSummedList(a_size, a_sum=100):
 	numList = [];
-	for i in range(x-1):
-		numList.append(random.randint(0, 100))
+	for i in range(a_size-1):
+		numList.append(random.randint(0, a_sum))
 	numList.append(0)
-	numList.append(100)
+	numList.append(a_sum)
 	numList.sort()
 	newList = []
 	for i in range(len(numList)-1):
@@ -15,8 +15,11 @@ def random100List(x):
 	random.shuffle(newList)
 	return(newList)
 
-size = 10
+"""size = 10
 print("We want",size, "numbers that add up to 100")
-numbers = random100List(size)
+numbers = randomSummedList(size, 1000)
 print("numbers:", numbers, "Length:", len(numbers))
 print("sum:", sum(numbers))
+numbers = randomSummedList(8)
+print("numbers:", numbers, "Length:", len(numbers))
+print("sum:", sum(numbers))"""
