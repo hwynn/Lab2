@@ -1,0 +1,44 @@
+statistics:
+
+voter:
+list of opinion scores for candidates
+	note: This is the first value made for the voter and it is the object they are.
+
+first-past-the-post ballot (FPTP) ballot (list of bools with one "TRUE")
+
+alternate vote ballot (list of ints from 1 to [roster size])
+
+candidate: 
+total opinion score
+
+number of FPTP votes
+
+number of final alternate votes
+list of placement on alternate votes
+
+election:
+highest opinion score
+FPTP winner
+alternate ballot winner
+
+
+functions needed:
++from a list of candidates, generate x voters (list of opinion scores) for the election
++createElection(candidateList, numberOfVoters)
+	this will create and run the election process and store the results in a dictionary
+	
+	createElection(candidateList, numberOfVoters):
+		create dictionary for candidates;
+		for candidate in candidateList:
+			add candidate object to dictionary (only name value is filled)
+		for i in range(size):
+			generate opinion list of [roster size]
+				for candidate on voter's opinion list:
+					add the opinion scores to the candidate's opinion total
+			from opinion list we use index_of_max to directly add an FPTP vote to a candidate
+				note: we first check to see if the opinion list has more than one maximum
+			
+			generate
+			add their FPTP placement to the candidate's FPTP placement list
+
++from a list of opinion scores, return a list of alternate ballot choices from 1 to [roster size]
