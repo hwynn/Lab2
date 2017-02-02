@@ -39,6 +39,6 @@ functions needed:
 				note: we first check to see if the opinion list has more than one maximum
 			
 			generate
-			add their FPTP placement to the candidate's FPTP placement list
+			add their alternate ballet placement to the candidate's alternate ballot placement list
 
 +from a list of opinion scores, return a list of alternate ballot choices from 1 to [roster size]

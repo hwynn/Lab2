@@ -35,8 +35,8 @@ def FPTPvote(a_opinionList):
 			if(x==biggest):
 				maxList.append(i)
 	return(maxList[random.randrange(0,len(maxList))]);
-print([1, 3, 29, 4, 29, 10])
-print(FPTPvote([1, 3, 29, 4, 29, 10]));#should be 2 or 4
+#print([1, 3, 29, 4, 29, 10])
+#print(FPTPvote([1, 3, 29, 4, 29, 10]));#should be 2 or 4
 
 def alternateVote(a_opinionList):
 	"""takes a list of numbers as input, and returns a list that is those numbers ranked from 1 to 10"""
@@ -47,4 +47,66 @@ def alternateVote(a_opinionList):
 		voteList[current] = i;
 		alteredList[current] = 0;
 	return(voteList);
-print(alternateVote([1, 3, 29, 4, 29, 10]));
+#print(alternateVote([1, 3, 29, 4, 29, 10]));
+
+class Candidate:
+	"""A candidate's profile and all information about their performance in an election.
+	
+	Attributes:
+		self.name			The name (or possibly species) of the candidate
+		self.opinionScore	The total opinion scores for the candidate from all voters. The higher this is for a candidate, the more highly voters think of them.
+							Each voter has 100 opinion score to give. So the total opinionScore of all candidates will be 100*voters
+		self.FPTPvotes		In the first past the post (FPTP) ballot system, the voter can only vote for one candidate. This number represents how many 
+		self.AVplacement	In the alternate vote (AV) system (also known as Instant-runoff voting or transferable vote), each voter ranks the candidates from most to least desireable. This is a list of all the ranks a candidate earns from all voters combined.
+							The placement of votes on this list represents ranked votes. [0] is 1st, [1] is 2nd, [2] is 3rd and etc.
+		self.AVvotes		In the alternate vote (AV) system, a candidate must win over 50% of the votes to win. These votes are assigned in cycles from the candidate's ranked votes with the least popular candidate dropping out in each cycle.
+	Methods:
+		def __init__(self, name)				Creates empty Candidate object
+		def setup_AVplacement(self, rosterSize)	Adjusts the size of self.AVplacement so that there is one element per rank in the election
+		add_FPTPvote(self)						Adds a single FPTP vote to a candidate's tally
+		def add_AVplacement(self, rank)			Adds a single ranked vote to a candidate's alternate votes
+		AVtransfer(self, round)					When the alternate votes are being counted, this will transfer a candidate's next rank of alternate votes to their total votes
+												This function must be used in a loop with rounds starting at 1 and ending at [rosterSize]
+		show_name(self)							Returns the candidate's name
+		show_opinionScore(self)					Returns the candidate's opinionScore
+		show_FPTPvotes(self)					Returns the candidate's FPTPvotes
+		show_AVplacement(self)					Returns the candidate's list of ranked votes from 1st to last
+		show_AVvotes(self)						Returns the candidate's current alternate vote total. This will begin at 0 and will only be finalized after all the AV counting cycles
+	"""
+	def __init__(self, name):
+        self.name = name
+		self.opinionScore = 0
+		self.FPTPvotes = 0
+		self.AVplacement = []
+		self.AVvotes = 0
+		
+	def setup_AVplacement(self, rosterSize):
+		self.AVplacement = [0]*rosterSize
+	
+	def add_FPTPvote(self):
+		self.FPTPvotes = self.FPTPvotes + 1
+	
+	def add_AVplacement(self, rank):
+		self.AVplacement[rank-1] += 1
+		#self.AVplacement[0] is a candidate's 1st votes, [1] is their 2nd votes, etc.
+		#+= used hesitantly
+	
+	def AVtransfer(self, round):
+		#round 1 will use a candidates 1st votes, stored in self.AVplacement[0] round2 is 2nd votes in self.AVplacement[1] etc.
+		self.AVvotes = self.AVvotes + self.AVplacement[round-1]
+	
+	def show_name(self):
+		return(self.name)
+		
+	def show_opinionScore(self):
+		return(self.opinionScore)
+	
+	def show_FPTPvotes(self):
+		return(self.FPTPvotes)
+		
+	def show_AVplacement(self):
+		return(self.AVplacement)
+	
+	def show_AVvotes(self):
+		return(self.AVvotes)
+
