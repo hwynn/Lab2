@@ -119,22 +119,7 @@ class Election:
 		self.candidates = [Candidate(x) for x in candidateList] #immediately creates empty candidate objects
 		for x in self.candidates:
 			x.setup_AVplacement(len(candidateList));
-		self.turnout = voterSize
-	
-	def generateVoters(self):
-		count = 0
-		while(count<self.turnout):
-			currentVoter = randomSummedList(len(self.candidates))
-			for i in range(len(currentVoter)):
-				self.candidates[i].add_opinionScore(currentVoter[i])
-			self.candidates[FPTPvote(currentVoter)].add_FPTPvote()
-			AVresponce = alternateVote(currentVoter)
-			for i in range(len(AVresponce)):
-				self.candidates[i].add_AVplacement(AVresponce[i])
-			count = count+1
-		
-	def runElection(self):
-		self.generateVoters()
+		self.generateVoters(len(candidateList),voterSize)
 		#function that starts creating voters
 		for x in self.candidates:
 			print(x.show_name())
@@ -142,7 +127,16 @@ class Election:
 			print("FPTPvotes:", x.show_FPTPvotes())
 			print("AVplacement:", x.show_AVplacement())
 		
-
+	def generateVoters(self,choices,turnout):
+		count = 0
+		while(count<turnout):
+			currentVoter = randomSummedList(choices)
+			for i in range(len(currentVoter)):
+				self.candidates[i].add_opinionScore(currentVoter[i])
+			self.candidates[FPTPvote(currentVoter)].add_FPTPvote()
+			AVresponce = alternateVote(currentVoter)
+			for i in range(len(AVresponce)):
+				self.candidates[i].add_AVplacement(AVresponce[i])
+			count = count+1
 
 firstTest = Election(["puppy", "bunny", "raccoon"], 20)
-firstTest.runElection()
