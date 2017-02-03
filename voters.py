@@ -51,7 +51,6 @@ def alternateVote(a_opinionList):
 
 def hasMajority(x):
 	"""takes a list of numbers and returns true if and only if one of the numbers is greater than 50% of the sum of the list"""
-	print("this should be a list",x)
 	return(max(x) > (0.5*sum(x)))
 
 class Candidate:
@@ -127,7 +126,6 @@ class Election:
 		self.turnout = voterSize
 		self.generateVoters()
 		#function that starts creating voters
-		print("did this work?1")
 		"""for x in self.candidates:
 			print(x.show_name())
 			print("Opinion score:", x.show_opinionScore())
@@ -156,9 +154,6 @@ class Election:
 
 		#http://stackoverflow.com/questions/3989016/how-to-find-all-positions-of-the-maximum-value-in-a-list
 		maxList = [self.candidates[key] for key,value in enumerate(self.candidates) if value.show_opinionScore()==MostPopularCandidate.show_opinionScore()]
-		"""for i,x in enumerate(opinions):
-			if(x==biggest):
-				maxList.append(self.candidates[i])"""
 		for x in maxList:
 			print(x.show_name(), "is the most popular")
 		return(maxList)
@@ -167,8 +162,8 @@ class Election:
 		"""returns the winning candidate of the FPTP election"""
 		FPTPvotes = [x.show_FPTPvotes() for x in self.candidates]
 		#print candidates with their votes
-		for x in self.candidates:
-			print(x.show_name(), str(x.show_FPTPvotes()).rjust(20-len(x.show_name()), ' '))
+		#for x in self.candidates:
+			#print(x.show_name(), str(x.show_FPTPvotes()).rjust(20-len(x.show_name()), ' '))
 		winner = (self.candidates[FPTPvote(FPTPvotes)])
 		#print winner
 		print(winner.show_name(), "has won the first-pass-the-post election!")
@@ -187,14 +182,13 @@ class Election:
 		#does this actually affect the objects outside this function?
 	
 	def AVresults(self):
-		print("Lets find the alternate vote winner")
 		remaining = [candidate for candidate in self.candidates]
 		for i in range(1, len(self.candidates)+1): #current round
 			remaining = self.AVround(remaining, i) #this adds next AV votes and removes the least popular candidate from the list
 			#print remaining candidates with their AV votes
-			print("Round", i)
-			for	x in remaining:
-				print(x.show_name(), str(x.show_AVvotes()).rjust(20-len(x.show_name()), ' ')) #this won't work if the candidate has a name longer than 20 characters
+			#print("Round", i)
+			#for	x in remaining:
+				#print(x.show_name(), str(x.show_AVvotes()).rjust(20-len(x.show_name()), ' ')) #this won't work if the candidate has a name longer than 20 characters
 			if (hasMajority([x.show_AVvotes() for x in remaining])):
 				break;
 		winner = remaining[0]
