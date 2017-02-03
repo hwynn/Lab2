@@ -159,6 +159,8 @@ class Election:
 		"""for i,x in enumerate(opinions):
 			if(x==biggest):
 				maxList.append(self.candidates[i])"""
+		for x in maxList:
+			print(x.show_name(), "is the most popular")
 		return(maxList)
 	
 	def FPTPResults(self):
@@ -169,7 +171,7 @@ class Election:
 			print(x.show_name(), str(x.show_FPTPvotes()).rjust(20-len(x.show_name()), ' '))
 		winner = (self.candidates[FPTPvote(FPTPvotes)])
 		#print winner
-		print(winner.show_name())
+		print(winner.show_name(), "has won the first-pass-the-post election!")
 		return(winner)
 	
 	def AVround(self, roster, round):
@@ -200,7 +202,7 @@ class Election:
 			if x.show_AVvotes() > winner.show_AVvotes():
 				winner=x
 		#print winning candidate
-		print(winner.show_name(), "has won the election!")
+		print(winner.show_name(), "has won the alternate vote election!")
 		return(winner)
 		
 
