@@ -1,8 +1,14 @@
 #! python3
-#this generates voters with opinion values for x given candidates
-#http://stackoverflow.com/a/8064754 inspiration source
+#	Author: Harrison Wynn
+#	Date: 2017-Feb-03
+#Inspired by recent events, this whole program was meant to simulate how different voting systems would influence the outcome of an election.
+#This simulation operates in a VERY simplistic model, but it's like science!
+#Hopefully this little thing can inspire at least some interest in an alternate ballot system one way or another.
+
 import random
 def randomSummedList(a_size, a_sum=100):
+	#this generates voters with opinion values for x given candidates
+	#http://stackoverflow.com/a/8064754 inspiration source
 	numList = [];
 	for i in range(a_size-1):
 		numList.append(random.randint(0, a_sum))
@@ -119,6 +125,9 @@ class Candidate:
 		return(self.AVvotes)
 
 class Election:
+	"""This class stores all the information needed for a simulation of a single election.
+	It stores a list of all the candidates, which each store how voters voted and felt about them.
+	Once the election is defined, it will immediately simulate the election"""
 	def __init__(self, candidateList, voterSize):
 		self.candidates = [Candidate(x) for x in candidateList] #immediately creates empty candidate objects
 		for x in self.candidates:
@@ -139,6 +148,8 @@ class Election:
 		
 		
 	def generateVoters(self):
+		"""This begins the process of generating voters. Their opinions are used to decide how they will vote.
+		All the votes for each candidate are stored in that candidate object"""
 		count = 0
 		while(count<self.turnout):
 			currentVoter = randomSummedList(len(self.candidates))
@@ -151,14 +162,15 @@ class Election:
 			count = count+1
 			
 	def opinionResults(self):
-		"""returns a list of all the candidates that had the most opinion score (multiple candidates only in a tie)"""
+		"""returns a list of all the candidates that had the most opinion score (multiple candidates only in a tie)
+		This system is a bit stupid since a single person can have influence than another person in deciding who the most popular candidate is."""
 		#help from friend online
 		MostPopularCandidate = max(self.candidates, key= lambda candidates: candidates.show_opinionScore())
 
 		#http://stackoverflow.com/questions/3989016/how-to-find-all-positions-of-the-maximum-value-in-a-list
 		maxList = [self.candidates[key] for key,value in enumerate(self.candidates) if value.show_opinionScore()==MostPopularCandidate.show_opinionScore()]
-		for x in maxList:
-			print(x.show_name(), "is the most popular")
+		#for x in maxList:
+			#print(x.show_name(), "is the most popular")
 		return(maxList)
 	
 	def FPTPResults(self):
@@ -169,7 +181,7 @@ class Election:
 			#print(x.show_name(), str(x.show_FPTPvotes()).rjust(20-len(x.show_name()), ' '))
 		winner = (self.candidates[FPTPvote(FPTPvotes)])
 		#print winner
-		print(winner.show_name(), "has won the first-pass-the-post election!")
+		#print(winner.show_name(), "has won the first-pass-the-post election!")
 		return(winner)
 	
 	def AVround(self, roster, round):
@@ -184,6 +196,8 @@ class Election:
 		return(roster)
 	
 	def AVresults(self):
+		"""This uses the alternate voting system to decide who wins the alternate vote election.
+		Look up how the alternate voting system works. It's really cool."""
 		remaining = [candidate for candidate in self.candidates]
 		for i in range(1, len(self.candidates)+1): #current round
 			remaining = self.AVround(remaining, i) #this adds next AV votes and removes the least popular candidate from the list
@@ -198,11 +212,13 @@ class Election:
 			if x.show_AVvotes() > winner.show_AVvotes():
 				winner=x
 		#print winning candidate
-		print(winner.show_name(), "has won the alternate vote election!")
+		#print(winner.show_name(), "has won the alternate vote election!")
 		return(winner)
 		
 
 def electionSimulator(can, vtrs, tests):
+	"""This runs an election [tests] times with [vtrs] voters choosing between the candidates [can]
+	The function keeps track out how often the two different voting systems agree get the most popular candidate elected"""
 	totatTests = 0
 	FPTPsuccess = 0
 	AVsuccess = 0
@@ -217,4 +233,6 @@ def electionSimulator(can, vtrs, tests):
 	print("FPTPsuccess:", FPTPsuccess)
 	print("AVsuccess:", AVsuccess)
 	return(0)
-electionSimulator(["puppy", "bunny", "raccoon", "kitten", "ferret"], 1000, 1000)
+#people voting on who is the cutest
+electionSimulator(["puppy", "bunny", "kitten", "alligator", "ferret"], 1000, 1000)
+#try seeing how the number of candidates influence the election success rates
