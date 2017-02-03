@@ -52,8 +52,7 @@ def alternateVote(a_opinionList):
 def hasMajority(x):
 	"""takes a list of numbers and returns true if and only if one of the numbers is greater than 50% of the sum of the list"""
 	print("this should be a list",x)
-	#return(max(x) > (0.5*sum(x)))
-	return(true)
+	return(max(x) > (0.5*sum(x)))
 
 class Candidate:
 	"""A candidate's profile and all information about their performance in an election.
@@ -129,14 +128,14 @@ class Election:
 		self.generateVoters()
 		#function that starts creating voters
 		print("did this work?1")
-		for x in self.candidates:
+		"""for x in self.candidates:
 			print(x.show_name())
 			print("Opinion score:", x.show_opinionScore())
 			print("FPTPvotes:", x.show_FPTPvotes())
-			print("AVplacement:", x.show_AVplacement())
+			print("AVplacement:", x.show_AVplacement())"""
 		self.OpinionWinners = self.opinionResults()
 		self.FPTPwinner = self.FPTPResults()
-		self.AVwinner = self.FPTPResults()
+		self.AVwinner = self.AVresults()
 		
 	def generateVoters(self):
 		count = 0
@@ -152,15 +151,14 @@ class Election:
 			
 	def opinionResults(self):
 		"""returns a list of all the candidates that had the most opinion score (multiple candidates only in a tie)"""
-		opinions = [x.show_opinionScore() for x in self.candidates]
-		biggest = max(opinions)
-		maxList = []
-		if(opinions.count(biggest) == 1):		#if one element is bigger than all the others
-			return([self.candidates(opinions.index(biggest))])
-		else:
-			for i,x in enumerate(opinions):
-				if(x==biggest):
-					maxList.append(self.candidates[i])
+		#help from friend online
+		MostPopularCandidate = max(self.candidates, key= lambda candidates: candidates.show_opinionScore())
+
+		#http://stackoverflow.com/questions/3989016/how-to-find-all-positions-of-the-maximum-value-in-a-list
+		maxList = [self.candidates[key] for key,value in enumerate(self.candidates) if value.show_opinionScore()==MostPopularCandidate.show_opinionScore()]
+		"""for i,x in enumerate(opinions):
+			if(x==biggest):
+				maxList.append(self.candidates[i])"""
 		return(maxList)
 	
 	def FPTPResults(self):
@@ -168,31 +166,13 @@ class Election:
 		FPTPvotes = [x.show_FPTPvotes() for x in self.candidates]
 		#print candidates with their votes
 		for x in self.candidates:
-			print(x.show_name(), x.show_FPTPvotes().rjust(20-len(x.show_name()), ' '))
+			print(x.show_name(), str(x.show_FPTPvotes()).rjust(20-len(x.show_name()), ' '))
 		winner = (self.candidates[FPTPvote(FPTPvotes)])
 		#print winner
 		print(winner.show_name())
 		return(winner)
 	
-	def AVresults(self):
-		remaining = [candidate for candidate in self.candidates]
-		for i in range(1, len(self.candidates)+1): #current round
-			remaining = AVround(remaining) #this adds next AV votes and removes the least popular candidate from the list
-			#print remaining candidates with their AV votes
-			print("Round", i)
-			for	x in remaining:
-				print(x.show_name(), x.show_AVvotes().rjust(20-len(x.show_name()), ' ')) #this won't work if the candidate has a name longer than 20 characters
-			if ([x.show_AVvotes() for x in self.remaining].hasMajority()):
-				break;
-		winner = remaining[0]
-		for x in remaining:
-			if x.show_AVvotes() > winner.show_AVvotes():
-				winner=x
-		#print winning candidate
-		print(winner.show_name(), "has won the election!")
-		return(winner)
-		
-	def AVround(roster, round):
+	def AVround(self, roster, round):
 		"""Takes a list of candidates, increments the value of their AVvotes, then returns a list of the candidates with the lowest scoring candidate removed"""
 		least = roster[0]
 		for x in roster:
@@ -203,4 +183,25 @@ class Election:
 		roster.remove(least)
 		return(roster)
 		#does this actually affect the objects outside this function?
-firstTest = Election(["puppy", "bunny", "raccoon"], 20)
+	
+	def AVresults(self):
+		print("Lets find the alternate vote winner")
+		remaining = [candidate for candidate in self.candidates]
+		for i in range(1, len(self.candidates)+1): #current round
+			remaining = self.AVround(remaining, i) #this adds next AV votes and removes the least popular candidate from the list
+			#print remaining candidates with their AV votes
+			print("Round", i)
+			for	x in remaining:
+				print(x.show_name(), str(x.show_AVvotes()).rjust(20-len(x.show_name()), ' ')) #this won't work if the candidate has a name longer than 20 characters
+			if (hasMajority([x.show_AVvotes() for x in remaining])):
+				break;
+		winner = remaining[0]
+		for x in remaining:
+			if x.show_AVvotes() > winner.show_AVvotes():
+				winner=x
+		#print winning candidate
+		print(winner.show_name(), "has won the election!")
+		return(winner)
+		
+
+firstTest = Election(["puppy", "bunny", "raccoon", "kitten", "ferret"], 100)
