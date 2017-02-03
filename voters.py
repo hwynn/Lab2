@@ -134,6 +134,9 @@ class Election:
 		self.OpinionWinners = self.opinionResults()
 		self.FPTPwinner = self.FPTPResults()
 		self.AVwinner = self.AVresults()
+		self.FPTPcompare = (self.FPTPwinner in self.OpinionWinners) #did the most popular candidate win the FPTP election?
+		self.AVcompare = (self.AVwinner in self.OpinionWinners) #did the most popular candidate win the alternate vote election?
+		
 		
 	def generateVoters(self):
 		count = 0
@@ -179,7 +182,6 @@ class Election:
 		#the alternate votes should all be assigned, and least should be the candidate with the least
 		roster.remove(least)
 		return(roster)
-		#does this actually affect the objects outside this function?
 	
 	def AVresults(self):
 		remaining = [candidate for candidate in self.candidates]
@@ -200,4 +202,19 @@ class Election:
 		return(winner)
 		
 
-firstTest = Election(["puppy", "bunny", "raccoon", "kitten", "ferret"], 100)
+def electionSimulator(can, vtrs, tests):
+	totatTests = 0
+	FPTPsuccess = 0
+	AVsuccess = 0
+	while(totatTests<tests):
+		aTest = Election(can, vtrs)
+		if(aTest.FPTPcompare):
+			FPTPsuccess = FPTPsuccess+1
+		if(aTest.AVcompare):
+			AVsuccess = AVsuccess+1
+		totatTests = totatTests+1
+	print("total elections:", totatTests)
+	print("FPTPsuccess:", FPTPsuccess)
+	print("AVsuccess:", AVsuccess)
+	return(0)
+electionSimulator(["puppy", "bunny", "raccoon", "kitten", "ferret"], 1000, 1000)
