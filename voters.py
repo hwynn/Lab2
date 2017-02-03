@@ -63,6 +63,7 @@ class Candidate:
 	Methods:
 		def __init__(self, name)				Creates empty Candidate object
 		def setup_AVplacement(self, rosterSize)	Adjusts the size of self.AVplacement so that there is one element per rank in the election
+		def add_opinionScore(self, x)			Adds to a candidates total opinion score
 		add_FPTPvote(self)						Adds a single FPTP vote to a candidate's tally
 		def add_AVplacement(self, rank)			Adds a single ranked vote to a candidate's alternate votes
 		AVtransfer(self, round)					When the alternate votes are being counted, this will transfer a candidate's next rank of alternate votes to their total votes
@@ -74,7 +75,7 @@ class Candidate:
 		show_AVvotes(self)						Returns the candidate's current alternate vote total. This will begin at 0 and will only be finalized after all the AV counting cycles
 	"""
 	def __init__(self, name):
-        self.name = name
+		self.name = name
 		self.opinionScore = 0
 		self.FPTPvotes = 0
 		self.AVplacement = []
@@ -82,6 +83,9 @@ class Candidate:
 		
 	def setup_AVplacement(self, rosterSize):
 		self.AVplacement = [0]*rosterSize
+		
+	def add_opinionScore(self, x):
+		self.opinionScore = self.opinionScore + x
 	
 	def add_FPTPvote(self):
 		self.FPTPvotes = self.FPTPvotes + 1
@@ -110,3 +114,35 @@ class Candidate:
 	def show_AVvotes(self):
 		return(self.AVvotes)
 
+class Election:
+	def __init__(self, candidateList, voterSize):
+		self.candidates = [Candidate(x) for x in candidateList] #immediately creates empty candidate objects
+		for x in self.candidates:
+			x.setup_AVplacement(len(candidateList));
+		self.turnout = voterSize
+	
+	def generateVoters(self):
+		count = 0
+		while(count<self.turnout):
+			currentVoter = randomSummedList(len(self.candidates))
+			for i in range(len(currentVoter)):
+				self.candidates[i].add_opinionScore(currentVoter[i])
+			self.candidates[FPTPvote(currentVoter)].add_FPTPvote()
+			AVresponce = alternateVote(currentVoter)
+			for i in range(len(AVresponce)):
+				self.candidates[i].add_AVplacement(AVresponce[i])
+			count = count+1
+		
+	def runElection(self):
+		self.generateVoters()
+		#function that starts creating voters
+		for x in self.candidates:
+			print(x.show_name())
+			print("Opinion score:", x.show_opinionScore())
+			print("FPTPvotes:", x.show_FPTPvotes())
+			print("AVplacement:", x.show_AVplacement())
+		
+
+
+firstTest = Election(["puppy", "bunny", "raccoon"], 20)
+firstTest.runElection()
