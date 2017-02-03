@@ -49,6 +49,10 @@ def alternateVote(a_opinionList):
 	return(voteList);
 #print(alternateVote([1, 3, 29, 4, 29, 10]));
 
+def hasMajority(x)
+	"""takes a list of numbers and returns true if and only if one of the numbers is greater than 50% of the sum of the list"""
+	returns(max(x) > (0.5*sum(x)))
+
 class Candidate:
 	"""A candidate's profile and all information about their performance in an election.
 	
@@ -119,18 +123,20 @@ class Election:
 		self.candidates = [Candidate(x) for x in candidateList] #immediately creates empty candidate objects
 		for x in self.candidates:
 			x.setup_AVplacement(len(candidateList));
-		self.generateVoters(len(candidateList),voterSize)
+		self.turnout = voterSize
+		self.generateVoters()
 		#function that starts creating voters
 		for x in self.candidates:
 			print(x.show_name())
 			print("Opinion score:", x.show_opinionScore())
 			print("FPTPvotes:", x.show_FPTPvotes())
 			print("AVplacement:", x.show_AVplacement())
+		self.topOpinion = self.opinionResults()
 		
-	def generateVoters(self,choices,turnout):
+	def generateVoters(self):
 		count = 0
-		while(count<turnout):
-			currentVoter = randomSummedList(choices)
+		while(count<self.turnout):
+			currentVoter = randomSummedList(len(self.candidates))
 			for i in range(len(currentVoter)):
 				self.candidates[i].add_opinionScore(currentVoter[i])
 			self.candidates[FPTPvote(currentVoter)].add_FPTPvote()
@@ -138,5 +144,62 @@ class Election:
 			for i in range(len(AVresponce)):
 				self.candidates[i].add_AVplacement(AVresponce[i])
 			count = count+1
+			
+	def opinionResults(self):
+		"""returns a list of all the candidates that had the most opinion score (multiple candidates only in a tie)"""
+		opinions = [x.show_opinionScore for x in self.candidates]
+			biggest = max(opinions)
+			maxList = []
+			if(opinions.count(biggest) == 1):
+				return([self.candidates(opinions.index(biggest))])
+			else:
+				for i,x in enumerate(opinions):
+					if(x==biggest):
+						maxList.append(self.candidates[i])
+		return(maxList)
+	
+	def FPTPResults(self):
+		"""returns the winning candidate of the FPTP election"""
+		FPTPvotes = [x.show_FPTPvotes for x in self.candidates]
+		#print candidates with their votes
+		for x in self.candidates:
+			print(x.show_name, x.show_FPTPvotes.rjust(20-len(x.show_name), ' '))
+		winner = (self.candidates[FPTPvote(FPTPvotes)])
+		#print winner
+		print(winner.show_name)
+		return(winner)
+	
+	def AVresults(self):
+		remaining = [candidate for candidate in self.candidates]
+		for i in range(1, len(self.candidates)+1): #current round
+			remaining = AVround(remaining) #this adds next AV votes and removes the least popular candidate from the list
+			#print remaining candidates with their AV votes
+			print("Round", i)
+			for	x in remaining:
+				print(x.show_name, x.show_AVvotes.rjust(20-len(x.show_name), ' ')) #this won't work if the candidate has a name longer than 20 characters
+			if ([x.show_AVvotes for x in self.remaining].hasMajority()):
+				break;
+		winner = remaining[0]
+		for x in remaining:
+			if x.show_AVvotes > winner.show_AVvotes:
+				winner=x
+		#print winning candidate
+		print(winner.show_name, "has won the election!")
+		return(winner)
+		
+	def AVround(roster, round):
+		"""Takes a list of candidates, increments the value of their AVvotes, then returns a list of the candidates with the lowest scoring candidate removed"""
+		least = roster[0]
+		for x in roster:
+			x.AVtransfer(round)
+			if(x.show_AVvotes < least.show_AVvotes):
+				least = x
+		#the alternate votes should all be assigned, and least should be the candidate with the least
+		roster.remove(least)
+		return(roster)
+		#does this actually affect the objects outside this function?
+		
+
+		
 
 firstTest = Election(["puppy", "bunny", "raccoon"], 20)
